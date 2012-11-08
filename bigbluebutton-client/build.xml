@@ -12,6 +12,13 @@
 	<property name="SRC_DIR" value="${BASE_DIR}/src" />
 		
 	<property name="OUTPUT_DIR" value="${BASE_DIR}/bin" />
+
+
+    <target name="check-properties">
+        <fail unless="FLEX_HOME">The "FLEX_HOME" property must be set</fail>
+        <echo>FLEX_HOME=${FLEX_HOME}</echo>
+    </target>
+    
 	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
 
 	<!-- Declare module names here -->
@@ -128,7 +135,7 @@
 			<!-- Invoke MXMLC -->
 			<mxmlc output="${OUTPUT_DIR}/locale/@{locale}_resources.swf">
 				<locale>@{locale}</locale>
-				<target-player>10.3.0</target-player>
+				<target-player>11</target-player>
 				<source-path path-element="locale/{locale}"/>
 				
 				<!--
@@ -185,6 +192,8 @@
 	<target name="build-deskshare-standalone" depends="build-deskshare-no-linker" description="Compile Deskshare Standalone Module">
 		<echo message="Compiling deskshare standalone without optimization." />
 		<build-module-no-link src="${SRC_DIR}" target="${DESKSHARE_SA}" />
+		<echo message="Copying deskshare applet for Deskshare Module" />
+		<copy file="${PROD_RESOURCES_DIR}/bbb-deskshare-applet-0.8.jar" todir="${OUTPUT_DIR}"/>		
 	</target>
 	
 	<target name="build-deskshare-no-linker" description="Compile Deskshare Module without the linker">
@@ -250,7 +259,7 @@
 			<attribute name="src" default="${SRC_DIR}" description="Path to the module to compile" />
 			<sequential>
 				<mxmlc file="@{src}/@{target}.mxml" output="${OUTPUT_DIR}/@{target}.swf" debug="false" mxml.compatibility-version="3.0.0" swf-version="13" optimize="true" link-report="linker-report.xml">
-					<target-player>10.3.0</target-player>
+					<target-player>11</target-player>
 					<load-config filename="@{flex}/frameworks/flex-config.xml" />
 					<source-path path-element="@{flex}/frameworks" />
 					
@@ -289,7 +298,7 @@
 		<attribute name="src" default="${SRC_DIR}" description="Path to the module to compile" />
 		<sequential>
 			<mxmlc file="@{src}/@{target}.mxml" output="${OUTPUT_DIR}/@{target}.swf" debug="false" mxml.compatibility-version="3.0.0" swf-version="13">
-				<target-player>10.3.0</target-player>
+				<target-player>11</target-player>
 				<load-config filename="@{flex}/frameworks/flex-config.xml" />
 				<source-path path-element="@{flex}/frameworks" />
 				<static-link-runtime-shared-libraries>${STATIC_RSL}</static-link-runtime-shared-libraries>
@@ -316,7 +325,7 @@
 		<attribute name="src" default="${SRC_DIR}" description="Path to the module to compile" />
 		<sequential>
 			<mxmlc file="@{src}/@{target}.mxml" output="${OUTPUT_DIR}/@{target}.swf" debug="false" mxml.compatibility-version="3.0.0" swf-version="13" optimize="true" load-externs="linker-report.xml">
-				<target-player>10.3.0</target-player>
+				<target-player>11</target-player>
 				<load-config filename="@{flex}/frameworks/flex-config.xml" />
 				<source-path path-element="@{flex}/frameworks" />
 				<static-link-runtime-shared-libraries>${STATIC_RSL}</static-link-runtime-shared-libraries>
@@ -373,10 +382,12 @@
 		<copy file="${PROD_RESOURCES_DIR}/BigBlueButtonTest.html" todir="${OUTPUT_DIR}" overwrite="true"/>
 		<copy file="${PROD_RESOURCES_DIR}/BigBlueButton.html" todir="${OUTPUT_DIR}" overwrite="true"/>
 		<copy file="${PROD_RESOURCES_DIR}/DeskshareStandalone.html" todir="${OUTPUT_DIR}" overwrite="true"/>
+		<copy file="${PROD_RESOURCES_DIR}/DeskshareApplet.html" todir="${OUTPUT_DIR}" overwrite="true"/>
 		<copy file="${PROD_RESOURCES_DIR}/bbb.gif" todir="${OUTPUT_DIR}" overwrite="true"/>		
 		<copy file="${PROD_RESOURCES_DIR}/locales.xml" todir="${OUTPUT_DIR}/conf" overwrite="true"/>	
 		<copy file="${PROD_RESOURCES_DIR}/expressInstall.swf" todir="${OUTPUT_DIR}" overwrite="true"/>	
 		<copy file="${PROD_RESOURCES_DIR}/example-info-data.xml" todir="${OUTPUT_DIR}/conf" overwrite="true"/>
+		<copy file="${PROD_RESOURCES_DIR}/bbb-deskshare-applet-0.8.jar" todir="${OUTPUT_DIR}"  overwrite="true"/>
 		<if>
            	   <equals arg1="${BUILD_ENV}" arg2="DEV"/>
            	      <then>

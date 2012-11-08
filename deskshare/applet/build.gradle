@@ -1,4 +1,4 @@
-usePlugin 'java'
+apply plugin: 'java'
 sourceCompatibility=1.6
 targetCompatibility=1.6
 
@@ -18,14 +18,15 @@ test {
     useTestNG()
 }
 
+jar {
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
 
-jar.doFirst {
-   println '''
-	/**
-	* Combine the common classes into the applet's jar because we
-	* do not want to sign and manage 2 jar files.
-	**/'''
+task copyToClient() << {
+    def clientDir = '../../bigbluebutton-client/resources/prod'
 
-   jar.merge('../common/build/libs/bbb-deskshare-common-0.8.jar')
+    ant.copy(todir: clientDir) {
+        fileset(file: "build/libs/bbb-deskshare-applet-0.8.jar")
+    }
 }
 

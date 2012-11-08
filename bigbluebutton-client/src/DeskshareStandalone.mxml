@@ -44,8 +44,11 @@
 			import mx.core.UIComponent;
 			import org.bigbluebutton.modules.deskshare.services.DeskshareService;
 			import org.bigbluebutton.common.Images;
+            import org.bigbluebutton.util.logging.ExternalInterfaceLogTarget;
+            import mx.logging.Log;
+
 			
-			private var videoHolder:UIComponent;
+			private var videoHolder:UIComponent = null;
 
 			private var cursor:Shape = new Shape();;
 						
@@ -60,10 +63,14 @@
 			private var room:String;
 			private var displayWidth:Number;
 			private var displayHeight:Number;
-			
+            private var log_target:ExternalInterfaceLogTarget = new ExternalInterfaceLogTarget();
+
 			private var service:DeskshareService = new DeskshareService();
+            
 			
-			private function onCreationComplete():void {			
+			private function onCreationComplete():void {
+                Log.addTarget(log_target);
+                
 			    var p:QueryStringParameters = new QueryStringParameters();
 				p.collectParameters();
 				logoutURL = p.getParameter("LOGOUTURL");
@@ -75,8 +82,8 @@
 				cursor.graphics.drawCircle(0,0,3);				
 				cursor.visible = false;
 				
-				displayWidth = this.parent.width;
-				displayHeight = this.parent.height;
+                displayWidth = this.parent.width;
+                displayHeight = this.parent.height;
 			}
 			
 			private function onAppletStart(event:AppletStartedEvent):void{
@@ -102,7 +109,12 @@
 				ns.receiveAudio(false);
 				video = new Video(videoWidth, videoHeight);
 				video.attachNetStream(ns);
-				
+
+				if (videoHolder) {
+                    vbox.removeChild(videoHolder);
+                    videoHolder = null
+                }
+
 				videoHolder = new UIComponent();
 				calculateDisplayDimensions(video, videoHolder);
 				videoHolder.addChild(video);	

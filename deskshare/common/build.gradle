@@ -1,3 +1,12 @@
-usePlugin 'java'
+apply plugin: 'java'
 version = '0.8'
 archivesBaseName = 'bbb-deskshare-common'
+
+dependencies {
+    // Testing
+    // compile 'org.testng:testng:5.8@jar'
+}
+
+test {
+    useTestNG()
+}

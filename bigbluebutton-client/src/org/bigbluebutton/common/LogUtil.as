@@ -25,28 +25,61 @@ package org.bigbluebutton.common
 	{
 		public static const LOGGER:String = "BBBLOGGER";
 		
-		public static function debug(message:String):void
+		public static function debug(... args):void
 		{
+            var message:String = "";
+
+            for (var i:uint = 0; i < args.length; i++)
+            {
+                message += String(args[i])+" ";
+            }
+
 			logger.debug(message);
 		}
 
-		public static function info(message:String):void
+		public static function info(... args):void
 		{
+            var message:String = "";
+
+            for (var i:uint = 0; i < args.length; i++)
+            {
+                message += String(args[i])+" ";
+            }
 			logger.info(message);
 		}
 		
-		public static function error(message:String):void
+		public static function error(... args):void
 		{
+            var message:String = "";
+
+            for (var i:uint = 0; i < args.length; i++)
+            {
+                message += String(args[i])+" ";
+            }
 			logger.error(message);
 		}
 
-		public static function fatal(message:String):void
+		public static function fatal(... args):void
 		{
+            var message:String = "";
+
+            for (var i:uint = 0; i < args.length; i++)
+            {
+                message += String(args[i])+" ";
+            }
+
 			logger.fatal(message);
 		}
 		
-		public static function warn(message:String):void
+		public static function warn(... args):void
 		{
+            var message:String = "";
+
+            for (var i:uint = 0; i < args.length; i++)
+            {
+                message += String(args[i])+" ";
+            }
+
 			logger.warn(message);
 		}
 		

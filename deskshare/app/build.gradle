@@ -1,6 +1,6 @@
-usePlugin 'scala'
-usePlugin 'java'
-usePlugin 'war'
+apply plugin: 'scala'
+apply plugin: 'java'
+apply plugin: 'war'
 
 version = '0.71'
 
