@@ -87,6 +87,24 @@
 			keystore="${keystore}-test"
 			storepass="TestSigningKeyPassword" />
 	</target>
+	
+	<target name="export-cert-test" depends="init-security">
+<!-- keytool -exportcert -keystore ~/.secret/local.keystore-test -alias code.signer -file bigpad_test.crt -->
+		<exec executable="keytool" >
+			<arg value="-export"/>
+			<arg value="-keystore"/>
+			<arg value="${keystore}-test"/>
+			<arg value="-storepass"/>
+			<arg value="TestSigningKeyPassword"/>
+			<arg value="-alias"/>
+			<arg value="${keystore.alias}"/>
+			<arg value="-file"/>
+			<arg value="bigpad_test.crt"/>
+		</exec>
+	</target>
+		
+		
+	
 
 	
 </project>
