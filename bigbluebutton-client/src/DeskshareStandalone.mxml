@@ -66,16 +66,25 @@
             private var log_target:ExternalInterfaceLogTarget = new ExternalInterfaceLogTarget();
 
 			private var service:DeskshareService = new DeskshareService();
-            
-			
+
 			private function onCreationComplete():void {
-                Log.addTarget(log_target);
-                
-			    var p:QueryStringParameters = new QueryStringParameters();
-				p.collectParameters();
-				logoutURL = p.getParameter("LOGOUTURL");
-				host = p.getParameter("HOST");
-				room = p.getParameter("ROOM");
+				Log.addTarget(log_target);
+
+				if (this.parameters['HOST'] && this.parameters['ROOM']) {
+					host = this.parameters["HOST"];
+					room = this.parameters["ROOM"];
+
+					if (this.parameters["LOGOUTURL"]) {
+						logoutURL = this.parameters["LOGOUTURL"];
+					}
+				} else {
+					var p:QueryStringParameters = new QueryStringParameters();
+					p.collectParameters();
+					logoutURL = p.getParameter("LOGOUTURL");
+					host = p.getParameter("HOST");
+					room = p.getParameter("ROOM");
+				}
+
 				service.connect(host+"/"+room);
 				
 				cursor.graphics.lineStyle(6, 0xFF0000, 0.6);

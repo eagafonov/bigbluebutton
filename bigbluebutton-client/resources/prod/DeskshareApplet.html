@@ -26,7 +26,7 @@
 
                     rtmp_url = "rtmp://"+gServerHost+":3935/deskShare";
 
-                    gLink = 'DeskshareStandalone.html?host='+rtmp_url+'&room='+gRoom;
+                    gLink = 'DeskshareStandalone.html#HOST='+rtmp_url+';ROOM='+gRoom;
 
                     function createApplet(id, host, room) {
                         var applet = $("<applet>").attr('code', 'org.bigbluebutton.deskshare.client.DeskShareApplet.class')
