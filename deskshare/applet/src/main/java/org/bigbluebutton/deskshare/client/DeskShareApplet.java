@@ -26,12 +26,14 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import java.awt.Image;
+import netscape.javascript.*; // add plugin.jar to classpath during compilation
 
 public class DeskShareApplet extends JApplet implements ClientListener {
 	public static final String NAME = "DESKSHAREAPPLET: ";
 	
 	private static final long serialVersionUID = 1L;
 
+    String appletId = "";
 	String hostValue = "localhost";
     Integer portValue = new Integer(9123);
     String roomValue = "85115";
@@ -49,11 +51,14 @@ public class DeskShareApplet extends JApplet implements ClientListener {
     Image icon;
     
     public boolean isSharing = false;
-    
+    private JSObject wrapper = null;
+
     @Override
 	public void init() {		
     	System.out.println("Desktop Sharing Applet Initializing");
-    	
+
+        appletId = getParameter("ID");
+
 		hostValue = getParameter("IP");
 		String port = getParameter("PORT");
 		if (port != null) portValue = Integer.parseInt(port);
@@ -71,6 +76,12 @@ public class DeskShareApplet extends JApplet implements ClientListener {
 	public void start() {		 	
 		System.out.println("Desktop Sharing Applet Starting");
 		super.start();
+
+        JSObject window = (JSObject)JSObject.getWindow(this);
+        this.wrapper = (JSObject)window.eval("window.bbbDeskshare.handlers['"+appletId+"']");
+
+        jsCall("onAppletCreate");
+
 		client = new DeskshareClient.NewBuilder().host(hostValue).port(portValue)
 					.room(roomValue).captureWidth(cWidthValue)
 					.captureHeight(cHeightValue).scaleWidth(sWidthValue).scaleHeight(sHeightValue)
@@ -79,6 +90,7 @@ public class DeskShareApplet extends JApplet implements ClientListener {
 					.httpTunnel(tunnelValue).trayIcon(icon).enableTrayIconActions(false).build();
 		client.addClientListener(this);
 		client.start();
+        jsCall("onAppletStart");
 	}
 			
 	@Override
@@ -96,6 +108,8 @@ public class DeskShareApplet extends JApplet implements ClientListener {
 	}
 	
 	public void onClientStop(ExitCode reason) {
+        jsCall("onAppletStop");
+
 		// determine if client is disconnected _PTS_272_
 		if ( ExitCode.CONNECTION_TO_DESKSHARE_SERVER_DROPPED == reason ){
 			JFrame pframe = new JFrame("Desktop Sharing Disconneted");
@@ -109,7 +123,31 @@ public class DeskShareApplet extends JApplet implements ClientListener {
 			}
 		}else{
 			client.stop();
-		}	
+		}
 	}
-	
+
+    private JSObject jsCall(java.lang.String methodName) {
+        return jsCall(methodName, new Object[] {});
+    }
+
+    private JSObject jsCall(java.lang.String methodName, java.lang.Object[] args) {
+        JSObject retval = null;
+
+        if (this.wrapper != null) {
+            try {
+                retval = (JSObject)this.wrapper.call(methodName, args);
+            }
+            catch (JSException e) {
+                System.err.printf("Got JS exception: ", e.getMessage());
+            }
+        } else {
+            System.err.printf("Can't call method '%s': not JS handler defined\n", methodName);
+        }
+
+        return null;
+    }
+
+    public void onPublishStart() {
+        jsCall("onShareStart");
+    };
 }

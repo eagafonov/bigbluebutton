@@ -145,6 +145,11 @@ public class DeskshareMain implements ClientListener, LifeLineListener {
 		queueExitCode(reason);
 	}
 
+	public void onPublishStart() {
+		System.out.println("Desktop sharing is started");
+	};
+
+
 	@Override
 	public void disconnected(ExitCode reason) {
 		queueExitCode(reason);		

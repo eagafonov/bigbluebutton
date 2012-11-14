@@ -28,25 +28,43 @@
 
                     gLink = 'DeskshareStandalone.html#HOST='+rtmp_url+';ROOM='+gRoom;
 
-                    function createApplet(id, host, room) {
+                    function createApplet(containerId, host, port, room) {
+                        id = containerId + "_applet"+Math.floor(Math.random() * 100000000);
+
+                        var handler = {
+                                id:id,
+                                onAppletCreate: null,
+                                onAppletStart:  null,
+                                onAppletStop:  null,
+                                onShareStart: null
+                            };
+
+                        window.bbbDeskshare.addHandler(id, handler);
+
                         var applet = $("<applet>").attr('code', 'org.bigbluebutton.deskshare.client.DeskShareApplet.class')
                                                   .attr('archive', 'bbb-deskshare-applet-0.8.jar')
                                                   .attr('id', id)
                                                   .addClass('applet');
 
+                        $("<param/>").attr('name', 'ID').attr('value', id).appendTo(applet);
                         $("<param/>").attr('name', 'ROOM').attr('value', room).appendTo(applet);
                         $("<param/>").attr('name', 'IP').attr('value', host).appendTo(applet);
-                        $("<param/>").attr('name', 'PORT').attr('value', 9123).appendTo(applet);
+                        $("<param/>").attr('name', 'PORT').attr('value', port).appendTo(applet);
                         $("<param/>").attr('name', 'FULLSCREEN').attr('value', 'fullscreen').appendTo(applet);
 
-                        return applet;
-                    }
-
-                    function addApplet(containerId, host, room) {
-                        var applet = createApplet(containerId + "_applet", host, gRoom);
 
                         $("#" + containerId).append(applet);
+
+                        return handler;
+                    }
+
+                    function addApplet(containerId, host, port, room) {
+                        var handler = createApplet(containerId, host, port, room);
+
+
                         $("#mydesktop_link").attr('href', gLink).text(gLink);
+
+                        return handler;
                     }
 
                     function stopApplet(containerId) {
@@ -58,11 +76,60 @@
                     $(document).ready(function() {
                             $("#mydesktop_link").removeAttr('href').empty();
                         })
+
+                    // returns an object
+                    function testObject() {
+                        this.f = function() {
+                            console.log("testObject.f()");
+                        }
+                    }
+
+                    function Wrapper() {
+                        this.hello = function() {
+                            console.log("Wrapper.hello()");
+                        }
+
+                        this.addHandler = function(appletId, handler) {
+                            this.handlers[appletId] = handler;
+                        }
+
+                        this.handlers = {};
+                    };
+
+                    window.bbbDeskshare = new Wrapper();
+
+                    gHandler = {
+                        onAppletCreate: function() {
+                            console.log("[Applet] Created");
+                        },
+                        onAppletStart: function() {
+                            console.log("[Applet] Started");
+                        },
+                        onAppletStop: function() {
+                            console.log("[Applet] Stopped");
+                        },
+                        onShareStart: function() {
+                            console.log("[Applet] Share started");
+                        }
+                    }
+
+                    function addApplet2() {
+                        var handler = addApplet("appletContainer", gServerHost, 9123, gRoom);
+                        console.log("Applet added", handler);
+
+                        handler.onAppletCreate = function() {console.log("[Applet] Created", this.id);};
+                        handler.onAppletStart = function() {console.log("[Applet] Started", this.id);};
+                        handler.onAppletStop =  function() {console.log("[Applet] Stopped", this.id);},
+                        handler.onShareStart = function() {console.log("[Applet] Share started", this.id);}
+
+                        console.log("Updated handler", handler);
+                    }
+
 				</script>
 
         </head>
         <body>
-                <input type='submit' value='Start desktop sharing' onclick='addApplet("appletContainer", gServerHost, gRoom)' />
+                <input type='submit' value='Start desktop sharing' onclick='addApplet2()' />
                 <input type='submit' value='Stop desktop sharing' onclick='stopApplet("appletContainer")' />
                 <div>
                 <a id='mydesktop_link' target='_blank'>!!SETUPME</a>

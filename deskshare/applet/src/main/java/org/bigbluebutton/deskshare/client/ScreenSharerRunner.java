@@ -75,7 +75,8 @@ public class ScreenSharerRunner {
 			sender.start();
 			MouseLocationListenerImp mouseLocListener = new MouseLocationListenerImp(sender, ssi.room);
 			mouseLocTaker.addListener(mouseLocListener);
-			mouseLocTaker.start();			
+			mouseLocTaker.start();
+            listener.onPublishStart();
 			started = true;
 		} else {
 			notifyListener(ExitCode.DESKSHARE_SERVICE_UNAVAILABLE);

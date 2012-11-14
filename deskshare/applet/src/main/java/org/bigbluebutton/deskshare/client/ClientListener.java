@@ -22,5 +22,6 @@
 package org.bigbluebutton.deskshare.client;
 
 public interface ClientListener {
-	public void onClientStop(ExitCode reason); 
+	public void onClientStop(ExitCode reason);
+	public void onPublishStart();
 }
