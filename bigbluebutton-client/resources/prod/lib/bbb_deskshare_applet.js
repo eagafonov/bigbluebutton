@@ -7,7 +7,17 @@
         },
 
         createApplet: function(containerId, host, port, room) {
-            id = containerId + "_applet"+Math.floor(Math.random() * 100000000);
+            var container;
+            var id;
+
+            if (typeof(containerId) == 'string') {
+                container = $("#" + containerId);
+            } else {
+                container = containerId;
+                containerId = containerId.attr('id');
+            }
+
+            var id = containerId + "_applet"+Math.floor(Math.random() * 100000000);
 
             var handler = {
                     id:id,
@@ -38,7 +48,7 @@
             $("<param/>").attr('name', 'FULLSCREEN').attr('value', 'fullscreen').appendTo(applet);
 
 
-            $("#" + containerId).append(applet);
+            container.append(applet);
 
             return handler;
         }

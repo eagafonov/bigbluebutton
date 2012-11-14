@@ -61,7 +61,13 @@
 
                     function addApplet2() {
                         if (gAppletCtrl === null) {
-                            addApplet("appletContainer", gServerHost, 9123, gRoom);
+
+                            // Option 1: ID of container object
+                            // addApplet("appletContainer", gServerHost, 9123, gRoom);
+
+                            // Option 2: container as jQuery DOM Element
+                            addApplet(jQuery("#appletContainer"), gServerHost, 9123, gRoom);
+
                         } else {
                             console.log("Applet is already created. Stop it before creating new one");
                         }
