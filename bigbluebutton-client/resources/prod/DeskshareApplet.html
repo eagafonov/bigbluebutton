@@ -36,7 +36,7 @@
 
                         console.log("Applet added", gAppletCtrl);
 
-                        gAppletCtrl.onAppletCreate = function() {console.log("[Applet] Created", this.id);};
+                        gAppletCtrl.onAppletInit = function() {console.log("[Applet] Created", this.id);};
                         gAppletCtrl.onAppletStart = function() {console.log("[Applet] Started", this.id);};
                         gAppletCtrl.onAppletStop =  function() {console.log("[Applet] Stopped", this.id);},
                         gAppletCtrl.onShareStart = function() {console.log("[Applet] Share started", this.id);}

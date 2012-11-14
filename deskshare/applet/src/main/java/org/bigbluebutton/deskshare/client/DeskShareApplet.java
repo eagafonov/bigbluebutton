@@ -59,6 +59,12 @@ public class DeskShareApplet extends JApplet implements ClientListener {
 
         appletId = getParameter("ID");
 
+        JSObject window = (JSObject)JSObject.getWindow(this);
+
+        this.wrapper = (JSObject)((JSObject)window.getMember("bbbDeskshare")).call("getHandler", new Object[]{appletId});
+
+        jsCall("onAppletInit");
+
 		hostValue = getParameter("IP");
 		String port = getParameter("PORT");
 		if (port != null) portValue = Integer.parseInt(port);
@@ -76,11 +82,6 @@ public class DeskShareApplet extends JApplet implements ClientListener {
 	public void start() {		 	
 		System.out.println("Desktop Sharing Applet Starting");
 		super.start();
-
-        JSObject window = (JSObject)JSObject.getWindow(this);
-        this.wrapper = (JSObject)window.eval("window.bbbDeskshare.handlers['"+appletId+"']");
-
-        jsCall("onAppletCreate");
 
 		client = new DeskshareClient.NewBuilder().host(hostValue).port(portValue)
 					.room(roomValue).captureWidth(cWidthValue)

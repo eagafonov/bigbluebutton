@@ -1,11 +1,15 @@
 (function(window){
-    window.bbbDeskshare = {
-        handlers: {}, // TODO Hide it
+    var handlers = {};
 
+    window.bbbDeskshare = {
         addHandler: function(id, handler) {
-            this.handlers[id] = handler;
+            handlers[id] = handler;
         },
 
+        getHandler: function(id) {
+            return handlers[id];
+        },
+ 
         createApplet: function(containerId, host, port, room) {
             var container;
             var id;
@@ -23,7 +27,7 @@
                     id:id,
  
                     // Callbacks
-                    onAppletCreate: null,
+                    onAppletInit: null,
                     onAppletStart:  null,
                     onAppletStop:  null,
                     onShareStart: null,
