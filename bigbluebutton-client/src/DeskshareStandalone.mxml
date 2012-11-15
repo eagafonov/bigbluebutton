@@ -61,11 +61,16 @@
 			private var logoutURL:String;
 			private var host:String;
 			private var room:String;
+			private var swf_id:String;
 			private var displayWidth:Number;
 			private var displayHeight:Number;
             private var log_target:ExternalInterfaceLogTarget = new ExternalInterfaceLogTarget();
 
 			private var service:DeskshareService = new DeskshareService();
+
+			private function jsCall(methodName:String, ... args):void {
+                ExternalInterface.call("window.bbbDeskshare_CallHelper", this.swf_id, methodName, args);
+			}
 
 			private function onCreationComplete():void {
 				Log.addTarget(log_target);
@@ -77,6 +82,7 @@
 					if (this.parameters["LOGOUTURL"]) {
 						logoutURL = this.parameters["LOGOUTURL"];
 					}
+
 				} else {
 					var p:QueryStringParameters = new QueryStringParameters();
 					p.collectParameters();
@@ -84,6 +90,10 @@
 					host = p.getParameter("HOST");
 					room = p.getParameter("ROOM");
 				}
+
+                this.swf_id = this.parameters['ID'];
+
+                jsCall("onCreated");
 
 				service.connect(host+"/"+room);
 				
@@ -104,6 +114,7 @@
 			}
 			
 			private function onAppletStop(event:ViewStreamEvent):void {
+                jsCall("onViewStop");
 				var url:URLRequest = new URLRequest(logoutURL);
 				navigateToURL(url, '_self');
 			}
@@ -132,7 +143,8 @@
 				centerVideo();
 				ns.play(stream);	
 				this.stream = stream;
-				vbox.addChild(videoHolder);		
+				vbox.addChild(videoHolder);
+				jsCall("onViewStart");
 			}
 			
 			private function centerVideo():void {
@@ -170,6 +182,7 @@
 			}
 			
 			public function stopViewing():void {
+				jsCall("onViewStop");
 				ns.close();				
 			}
 			
