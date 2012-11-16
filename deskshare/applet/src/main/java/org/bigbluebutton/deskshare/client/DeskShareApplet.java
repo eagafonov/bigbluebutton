@@ -75,7 +75,12 @@ public class DeskShareApplet extends JApplet implements ClientListener {
 
 		String tunnel = getParameter("HTTP_TUNNEL");
 		if (tunnel != null) tunnelValue = Boolean.parseBoolean(tunnel);
-		icon = getImage(getCodeBase(), "bbb.gif");
+
+        String tryIconPath = getParameter("TRAY_ICON");
+
+        if (tryIconPath != null) {
+            icon = getImage(getCodeBase(), tryIconPath);
+        }
 	}
 		
 	@Override
