@@ -10,7 +10,7 @@
             return handlers[id];
         },
  
-        createApplet: function(containerId, host, port, room) {
+        createApplet: function(containerId, host, port, room, jarPath) {
             var container;
             var id;
 
@@ -19,6 +19,10 @@
             } else {
                 container = containerId;
                 containerId = containerId.attr('id');
+            }
+
+            if (jarPath === undefined) {
+                jarPath = 'bbb-deskshare-applet-0.8.jar'
             }
 
             var id = containerId + "_applet"+Math.floor(Math.random() * 100000000);
@@ -41,7 +45,7 @@
             this.addHandler(id, handler);
 
             var applet = $("<applet>").attr('code', 'org.bigbluebutton.deskshare.client.DeskShareApplet.class')
-                                        .attr('archive', 'bbb-deskshare-applet-0.8.jar')
+                                        .attr('archive', jarPath)
                                         .attr('id', id)
                                         .addClass('applet');
 
