@@ -100,9 +100,6 @@
 				cursor.graphics.lineStyle(6, 0xFF0000, 0.6);
 				cursor.graphics.drawCircle(0,0,3);				
 				cursor.visible = false;
-				
-                displayWidth = this.parent.width;
-                displayHeight = this.parent.height;
 			}
 			
 			private function onAppletStart(event:AppletStartedEvent):void{
@@ -119,7 +116,10 @@
 				navigateToURL(url, '_self');
 			}
 						
-			private function startVideo(connection:NetConnection, stream:String, videoWidth:Number, videoHeight:Number):void{	
+			private function startVideo(connection:NetConnection, stream:String, videoWidth:Number, videoHeight:Number):void{
+                displayWidth = this.parent.width;
+                displayHeight = this.parent.height;
+
 				ns = new NetStream(connection);
 				ns.addEventListener( NetStatusEvent.NET_STATUS, onNetStatus );
 				ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR, onAsyncError);
