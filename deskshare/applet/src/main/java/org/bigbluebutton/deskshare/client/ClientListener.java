@@ -24,4 +24,5 @@ package org.bigbluebutton.deskshare.client;
 public interface ClientListener {
 	public void onClientStop(ExitCode reason);
 	public void onPublishStart();
+	public void onSizePositionChange(int x, int y, int w, int h);
 }

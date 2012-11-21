@@ -97,6 +97,8 @@ public class ScreenRegionSharer implements ScreenSharer {
 			ssi.y = y;
 			if (sharer != null)
 				sharer.setCaptureCoordinates(x, y);
+
+            listener.onSizePositionChange(ssi.x, ssi.y, ssi.captureWidth, ssi.captureHeight);
 		}
 
 		@Override
@@ -110,6 +112,7 @@ public class ScreenRegionSharer implements ScreenSharer {
 			sharer = new ScreenSharerRunner(ssi);
 			sharer.addClientListener(listener);
 			sharer.startSharing();
+            listener.onSizePositionChange(ssi.x, ssi.y, ssi.captureWidth, ssi.captureHeight);
 		}
 
 		@Override

@@ -27,6 +27,7 @@ import javax.swing.JOptionPane;
 
 import java.awt.Image;
 import netscape.javascript.*; // add plugin.jar to classpath during compilation
+import java.lang.StringBuilder;
 
 public class DeskShareApplet extends JApplet implements ClientListener {
 	public static final String NAME = "DESKSHAREAPPLET: ";
@@ -43,19 +44,67 @@ public class DeskShareApplet extends JApplet implements ClientListener {
     Integer sHeightValue = new Integer(600);   
     Boolean qualityValue = false;
     Boolean aspectRatioValue = false;
-    Integer xValue = new Integer(0);
-    Integer yValue = new Integer(0);
+    Integer xValue = new Integer(-1);
+    Integer yValue = new Integer(-1);
     Boolean tunnelValue = true;
     Boolean fullScreenValue = false;
     DeskshareClient client;
     Image icon;
-    
+
     public boolean isSharing = false;
     private JSObject wrapper = null;
+    String cookieFormat = "1";
+
+    public String readCookie() {
+        String data = "";
+
+        String cookiename = "__deskshareAppletData";
+
+        JSObject myBrowser = JSObject.getWindow(this);
+        JSObject myDocument = (JSObject) myBrowser.getMember("document");
+
+        String myCookie = (String) myDocument.getMember("cookie");
+
+        if (myCookie.length() > 0) {
+            String[] cookies = myCookie.split(";");
+
+            for (String cookie : cookies) {
+                String[] name_val = cookie.split("=", 2);
+
+                System.out.printf("Cookie name_val '%s' %d\n", name_val[0], name_val.length);
+
+                if (name_val[0].trim().equals(cookiename)) {
+                    if (name_val.length > 1) {
+                        data = name_val[1];
+                    }
+                    break;
+                }
+            }
+        }
+
+        return data;
+    }
+
+    public void writeCookie(String cookieData) {
+        String cookiename = "__deskshareAppletData";
+
+        JSObject myBrowser = JSObject.getWindow(this);
+        JSObject myDocument = (JSObject) myBrowser.getMember("document");
+
+        myDocument.setMember("cookie", cookiename + "=" + cookieData);
+    }
+
+    public void onSizePositionChange(int x, int y, int w, int h) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(cookieFormat).append("#").append(x).append('#').append(y).append('#').append(w).append('#').append(h);
+
+        writeCookie(sb.toString());
+    };
 
     @Override
 	public void init() {		
-    	System.out.println("Desktop Sharing Applet Initializing");
+        System.out.println("Desktop Sharing Applet Initializing");
 
         appletId = getParameter("ID");
 
@@ -80,6 +129,25 @@ public class DeskShareApplet extends JApplet implements ClientListener {
 
         if (tryIconPath != null) {
             icon = getImage(getCodeBase(), tryIconPath);
+        }
+
+
+        String cookie = readCookie();
+
+        String[] cookie_data = cookie.split("#"); // VERSION#X#Y#WIDTH#HEIGHT
+
+        if (cookie_data.length == 5 && cookie_data[0].equals(cookieFormat)) {
+            // X#Y#WIDTH#HEIGHT
+
+            xValue = Integer.parseInt( cookie_data[1] );
+            yValue = Integer.parseInt( cookie_data[2] );
+            sWidthValue = cWidthValue = Integer.parseInt( cookie_data[3] );
+            sHeightValue = cHeightValue = Integer.parseInt( cookie_data[4] );
+
+//             System.out.println("Got initial size/position from cookie");
+        } else {
+//             System.out.printf("Init size/position cookie ('%s', '%s')\n", cookie_data.length, cookie, cookie_data[0]);
+            onSizePositionChange(xValue, yValue, sWidthValue, sHeightValue);
         }
 	}
 		

@@ -224,8 +224,15 @@ public class DeskshareClient {
     	private void setupCaptureRegion() {
     		if (captureWidth > 0 && captureHeight > 0) {
         			java.awt.Dimension fullScreenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        			x = ((int) fullScreenSize.getWidth() - captureWidth) / 2;
-        			y = ((int) fullScreenSize.getHeight() - captureHeight) / 2;    
+
+                    if (x < 0) {
+                        x = ((int) fullScreenSize.getWidth() - captureWidth) / 2;
+                    }
+
+                    if (y < 0) {
+                        y = ((int) fullScreenSize.getHeight() - captureHeight) / 2;
+                    }
+
         			System.out.println("Info[" + captureWidth + "," + captureHeight + "][" + x + "," + y +"]"
         					+ "[" + fullScreenSize.getWidth() + "," + fullScreenSize.getHeight() + "]");
 //    			calculateDimensionsToMaintainAspectRatio();

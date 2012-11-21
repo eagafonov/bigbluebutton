@@ -105,8 +105,8 @@ public class DeskshareMain implements ClientListener, LifeLineListener {
       Integer sHeightValue = (Integer)parser.getOptionValue(sHeight, new Integer(600));
         Boolean qualityValue = (Boolean)parser.getOptionValue(quality, new Boolean(false));
         Boolean aspectValue = (Boolean)parser.getOptionValue(aspectRatio, new Boolean(false));
-        Integer xValue = (Integer)parser.getOptionValue(xCoord, new Integer(0));
-        Integer yValue = (Integer)parser.getOptionValue(yCoord, new Integer(0));
+        Integer xValue = (Integer)parser.getOptionValue(xCoord, new Integer(-1));
+        Integer yValue = (Integer)parser.getOptionValue(yCoord, new Integer(-1));
         Boolean tunnelValue = (Boolean)parser.getOptionValue(tryHttpTunnel, new Boolean(false));
         String iconValue = (String)parser.getOptionValue(icon, "bbb.gif");
         Boolean fullScreenValue = (Boolean)parser.getOptionValue(fullScreen, new Boolean(false));
@@ -168,4 +168,8 @@ public class DeskshareMain implements ClientListener, LifeLineListener {
 			System.exit(reason.getExitCode());
 		}
 	}
+
+    public void onSizePositionChange(int x, int y, int w, int h) {
+            System.out.printf("Size %d,%d-(%dx%d)\n", x,y,w,h);
+    };
 }
