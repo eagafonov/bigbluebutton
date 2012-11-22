@@ -159,9 +159,12 @@
 					videoHolder.height = video.height;
 					return;
 				}
-				
-				if (displayWidth < displayHeight) {
-					fitToWidthAndAdjustHeightToMaintainAspectRatio();				
+
+				var videoAscpectRatio:Number = video.width / video.height;
+				var displayAscpectRatio:Number = displayWidth / displayHeight;
+
+				if (displayAscpectRatio < videoAscpectRatio) {
+					fitToWidthAndAdjustHeightToMaintainAspectRatio();
 				} else {
 					fitToHeightAndAdjustWidthToMaintainAspectRatio();
 				}
