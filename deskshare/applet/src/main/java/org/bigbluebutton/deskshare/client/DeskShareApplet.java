@@ -71,7 +71,7 @@ public class DeskShareApplet extends JApplet implements ClientListener {
             for (String cookie : cookies) {
                 String[] name_val = cookie.split("=", 2);
 
-                System.out.printf("Cookie name_val '%s' %d\n", name_val[0], name_val.length);
+//                 System.out.printf("Cookie name_val '%s' %d\n", name_val[0], name_val.length);
 
                 if (name_val[0].trim().equals(cookiename)) {
                     if (name_val.length > 1) {
