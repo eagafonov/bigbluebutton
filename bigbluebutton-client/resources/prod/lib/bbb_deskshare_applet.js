@@ -45,7 +45,7 @@
             this.addHandler(id, handler);
 
             var applet = $("<applet>").attr('code', 'org.bigbluebutton.deskshare.client.DeskShareApplet.class')
-                                        .attr('archive', jarPath)
+                                        .attr('archive', jarPath+"?VTAG=00000000")
                                         .attr('id', id)
                                         .addClass('applet');
 
