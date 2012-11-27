@@ -129,6 +129,7 @@
 				ns.receiveVideo(true);
 				ns.receiveAudio(false);
 				video = new Video(videoWidth, videoHeight);
+				video.smoothing = true;
 				video.attachNetStream(ns);
 
 				if (videoHolder) {
