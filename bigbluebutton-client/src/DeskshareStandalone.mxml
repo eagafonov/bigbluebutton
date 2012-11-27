@@ -47,6 +47,9 @@
 			import org.bigbluebutton.common.Images;
             import org.bigbluebutton.util.logging.ExternalInterfaceLogTarget;
             import mx.logging.Log;
+            import flash.utils.Timer;
+            import flash.events.TimerEvent;
+            import org.bigbluebutton.common.LogUtil;
 
 			
 			private var videoHolder:UIComponent = null;
@@ -65,9 +68,14 @@
 			private var swf_id:String;
 			private var displayWidth:Number;
 			private var displayHeight:Number;
+            private var videoOrigWidth:Number;
+            private var videoOrigHeight:Number;
+            
             private var log_target:ExternalInterfaceLogTarget = new ExternalInterfaceLogTarget();
 
 			private var service:DeskshareService = new DeskshareService();
+
+            private var checkVideoSizeTimer:Timer = new Timer(1000);
 
 			private function jsCall(methodName:String, ... args):void {
                 ExternalInterface.call("window.bbbDeskshare_CallHelper", this.swf_id, methodName, args);
@@ -101,7 +109,21 @@
 				cursor.graphics.lineStyle(6, 0xFF0000, 0.6);
 				cursor.graphics.drawCircle(0,0,3);				
 				cursor.visible = false;
+
+
+                checkVideoSizeTimer.addEventListener(TimerEvent.TIMER, OnCheckVideoSize);
+                checkVideoSizeTimer.start()
 			}
+
+            private function OnCheckVideoSize(e:TimerEvent):void {
+                if (videoHolder != null &&
+                    displayWidth != this.parent.width ||
+                    displayHeight != this.parent.height)
+                {
+                    LogUtil.debug("Check Viewer Size", displayWidth, displayHeight, this.parent.width, this.parent.height);
+                    adjustViewerSize();
+                }
+            }
 			
 			private function onAppletStart(event:AppletStartedEvent):void{
 				startVideo(service.getConnection(), room, event.videoWidth, event.videoHeight);
@@ -118,9 +140,6 @@
 			}
 						
 			private function startVideo(connection:NetConnection, stream:String, videoWidth:Number, videoHeight:Number):void{
-                displayWidth = this.parent.width;
-                displayHeight = this.parent.height;
-
 				ns = new NetStream(connection);
 				ns.addEventListener( NetStatusEvent.NET_STATUS, onNetStatus );
 				ns.addEventListener(AsyncErrorEvent.ASYNC_ERROR, onAsyncError);
@@ -131,6 +150,8 @@
 				video = new Video(videoWidth, videoHeight);
 				video.smoothing = true;
 				video.attachNetStream(ns);
+                videoOrigWidth = video.width;
+                videoOrigHeight = video.height;
 
 				if (videoHolder) {
                     vbox.removeChild(videoHolder);
@@ -138,16 +159,34 @@
                 }
 
 				videoHolder = new UIComponent();
-				calculateDisplayDimensions(video, videoHolder);
+
+                adjustViewerSize();
+
+				                
 				videoHolder.addChild(video);	
 				videoHolder.addChild(cursor);	
 				videoHolder.addChild(cursorImg);
-				centerVideo();
 				ns.play(stream);	
 				this.stream = stream;
 				vbox.addChild(videoHolder);
 				jsCall("onViewStart");
 			}
+
+            private function adjustViewerSize():void {
+                LogUtil.debug("adjustViewerSize", displayWidth, displayHeight, this.parent.width, this.parent.height);
+
+                this.displayWidth = this.parent.width;
+                this.displayHeight = this.parent.height;
+
+                calculateDisplayDimensions(video, videoHolder);
+                LogUtil.debug("display", displayWidth, displayHeight);
+                LogUtil.debug("orig video", videoOrigWidth, videoOrigHeight);
+
+                LogUtil.debug("video  ", video.width, video.height);
+                LogUtil.debug("holder ", videoHolder.width, videoHolder.height);
+
+                centerVideo();
+            }
 			
 			private function centerVideo():void {
 				videoHolder.x = vbox.width/2 - video.width/2;
@@ -156,8 +195,8 @@
 			
 			private function calculateDisplayDimensions(video:Video, videoHolder:UIComponent):void {
 				if (videoIsSmallerThanDisplay(video, videoHolder)) {
-					videoHolder.width = video.width;
-					videoHolder.height = video.height;
+					videoHolder.width = videoOrigWidth;
+					videoHolder.height = videoOrigHeight;
 					return;
 				}
 
@@ -210,7 +249,7 @@
 			}
 
 			private function videoIsSmallerThanDisplay(video:Video, videoHolder:UIComponent):Boolean {
-				return (video.height < displayHeight) && (video.width < displayWidth);
+                return (videoOrigHeight < displayHeight) && (videoOrigWidth < displayWidth);
 			}
 			
 			private function fitToWidthAndAdjustHeightToMaintainAspectRatio():void {	
