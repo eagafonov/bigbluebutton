@@ -64,11 +64,15 @@
 
                         swfobject.embedSWF(
                             "DeskshareStandalone.swf?v=VERSION", objectId,
-                            "100%", "100%",
+                            "100px", "100px",
                             swfVersionStr, xiSwfUrlStr,
                             flashvars, params, attributes);
 
 
+                    }
+
+                    function setViewerSize(w, h) {
+                        $('#deskshareswf').attr('width', w).attr('height', h);
                     }
 
                     $(document).ready(function() {
@@ -89,6 +93,13 @@
                 </script>
         </head>
         <body>
+                <div>
+                <input type='button' value='1x1' onclick="setViewerSize('1px', '1px')">
+                <input type='button' value='100x100' onclick="setViewerSize('100px', '100px')">
+                <input type='button' value='800x600' onclick="setViewerSize('800px', '600px')">
+                <input type='button' value='1000x1000' onclick="setViewerSize('1000px', '1000px')">
+                <input type='button' value='100% x 100%' onclick="setViewerSize('100%', '100%')">
+                </div>
                 <div id="content">
                 </div>
         </body>
