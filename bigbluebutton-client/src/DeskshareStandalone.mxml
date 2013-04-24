@@ -50,6 +50,7 @@
             import flash.utils.Timer;
             import flash.events.TimerEvent;
             import org.bigbluebutton.common.LogUtil;
+            import flash.events.FullScreenEvent;
 
 			
 			private var videoHolder:UIComponent = null;
@@ -113,6 +114,9 @@
 
                 checkVideoSizeTimer.addEventListener(TimerEvent.TIMER, OnCheckVideoSize);
                 checkVideoSizeTimer.start()
+
+                LogUtil.debug("Setup onFullScreenChanaged");
+                stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenChanaged);
 			}
 
             private function OnCheckVideoSize(e:TimerEvent):void {
@@ -120,6 +124,8 @@
                     displayWidth != this.parent.width ||
                     displayHeight != this.parent.height)
                 {
+                    updateFullScreenButtons(stage.displayState == StageDisplayState.FULL_SCREEN);
+
                     LogUtil.debug("Check Viewer Size", displayWidth, displayHeight, this.parent.width, this.parent.height);
                     adjustViewerSize();
                 }
@@ -270,9 +276,36 @@
 				// Maintain aspect-ratio
 				video.width = aspectRatio * displayHeight;
 				videoHolder.width = video.width;				
-			}			
+			}
+
+			private function toFullScreen(event:Event):void {
+				LogUtil.debug("Switch to fullscreen mode");
+				stage.displayState = StageDisplayState.FULL_SCREEN;
+
+				updateFullScreenButtons(true);
+			};
+
+			private function toWindowScreen(event:Event):void {
+				LogUtil.debug("Switch to window mode");
+				stage.displayState = StageDisplayState.NORMAL;
+
+				updateFullScreenButtons(false);
+			};
+
+			public function onFullScreenChanaged(event:FullScreenEvent):void {
+				LogUtil.debug("onFullScreenChanaged");
+				updateFullScreenButtons(event.fullScreen);
+			}
+
+			private function updateFullScreenButtons(fullScreen:Boolean):void {
+				LogUtil.debug("updateFullScreenButtons ", fullScreen);
+				window.visible = fullScreen;
+				fullscreen.visible = !fullScreen;
+			}
 		]]>
 	</mx:Script>
 		<mx:Image id="cursorImg" visible="false" source="@Embed('org/bigbluebutton/modules/deskshare/assets/images/cursor4.png')"/>
 		<mx:Canvas id="vbox" width="100%" height="100%"/>	
+		<mx:Button id="fullscreen" click="toFullScreen(event)" left="0" bottom="0" icon="@Embed('org/bigbluebutton/modules/deskshare/assets/images/ico_maxscreen.png')"/>
+		<mx:Button id="window" click="toWindowScreen(event)" left="0" bottom="0" visible="false" icon="@Embed('org/bigbluebutton/modules/deskshare/assets/images/ico_minscreen.png')"/>
 </mx:Application>
