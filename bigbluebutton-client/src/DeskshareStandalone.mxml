@@ -71,12 +71,14 @@
 			private var displayHeight:Number;
             private var videoOrigWidth:Number;
             private var videoOrigHeight:Number;
-            
+
             private var log_target:ExternalInterfaceLogTarget = new ExternalInterfaceLogTarget();
 
 			private var service:DeskshareService = new DeskshareService();
 
             private var checkVideoSizeTimer:Timer = new Timer(1000);
+
+            private var fullScreenEnabled:Boolean = false;
 
 			private function jsCall(methodName:String, ... args):void {
                 ExternalInterface.call("window.bbbDeskshare_CallHelper", this.swf_id, methodName, args);
@@ -102,6 +104,7 @@
 				}
 
                 this.swf_id = this.parameters['ID'];
+                updateFullScreenButtons(false);
 
                 jsCall("onCreated");
 
@@ -115,8 +118,6 @@
                 checkVideoSizeTimer.addEventListener(TimerEvent.TIMER, OnCheckVideoSize);
                 checkVideoSizeTimer.start()
 
-                LogUtil.debug("Setup onFullScreenChanaged");
-                stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenChanaged);
 			}
 
             private function OnCheckVideoSize(e:TimerEvent):void {
@@ -176,6 +177,14 @@
 				this.stream = stream;
 				vbox.addChild(videoHolder);
 				jsCall("onViewStart");
+
+                LogUtil.debug("Setup onFullScreenChanaged");
+                vbox.stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenChanaged);
+
+                this.fullScreenEnabled = vbox.stage["allowsFullScreen"];
+                updateFullScreenButtons(vbox.stage.displayState == StageDisplayState.FULL_SCREEN);
+
+                LogUtil.debug("startVideo() done");
 			}
 
             private function adjustViewerSize():void {
@@ -279,10 +288,12 @@
 			}
 
 			private function toFullScreen(event:Event):void {
-				LogUtil.debug("Switch to fullscreen mode");
-				stage.displayState = StageDisplayState.FULL_SCREEN;
 
-				updateFullScreenButtons(true);
+                if (this.fullScreenEnabled) {
+                    LogUtil.debug("Switch to fullscreen mode");
+                    stage.displayState = StageDisplayState.FULL_SCREEN;
+                    updateFullScreenButtons(true);
+                }
 			};
 
 			private function toWindowScreen(event:Event):void {
@@ -298,14 +309,15 @@
 			}
 
 			private function updateFullScreenButtons(fullScreen:Boolean):void {
-				LogUtil.debug("updateFullScreenButtons ", fullScreen);
-				window.visible = fullScreen;
-				fullscreen.visible = !fullScreen;
+				LogUtil.debug("updateFullScreenButtons ", this.fullScreenEnabled, fullScreen);
+
+				window.visible = this.fullScreenEnabled && fullScreen;
+				fullscreen.visible = this.fullScreenEnabled && !fullScreen;
 			}
 		]]>
 	</mx:Script>
 		<mx:Image id="cursorImg" visible="false" source="@Embed('org/bigbluebutton/modules/deskshare/assets/images/cursor4.png')"/>
 		<mx:Canvas id="vbox" width="100%" height="100%"/>	
-		<mx:Button id="fullscreen" click="toFullScreen(event)" left="0" bottom="0" icon="@Embed('org/bigbluebutton/modules/deskshare/assets/images/ico_maxscreen.png')"/>
+		<mx:Button id="fullscreen" click="toFullScreen(event)" left="0" bottom="0" visible="false" icon="@Embed('org/bigbluebutton/modules/deskshare/assets/images/ico_maxscreen.png')"/>
 		<mx:Button id="window" click="toWindowScreen(event)" left="0" bottom="0" visible="false" icon="@Embed('org/bigbluebutton/modules/deskshare/assets/images/ico_minscreen.png')"/>
 </mx:Application>
